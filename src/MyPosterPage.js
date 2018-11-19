@@ -14,17 +14,22 @@ import {
 } from 'react-native';
 
 import MyPlayer from './MyPlayer'
+import BackInterface from './BackInterface';
 
-var REQUEST_URL = 'https://m.douyu.com/api/room/list';
+var REQUEST_URL = 'https://m.zhanqi.tv/api/static/game.lives';
+var PLAY_URL = 'https://alhls-cdn.zhanqi.tv/zqlive';
+
+var perNum = 20;
 
 let pageNo = 1;
 let totalPage=1;
 let itemNo=0;
 
-class MyPosterPage extends Component {
+class MyPosterPage extends BackInterface {
 
   constructor(props) {
     super(props);
+    super.addNavigationStack('MyPosterPage');
     this.state = {
       refreshing: false,
       dataArray: [],
@@ -36,16 +41,7 @@ class MyPosterPage extends Component {
   }
 
   componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.go_back.bind(this))
     this.loadData();
-  }
-
-  go_back() {
-      if (this.props.navigation) {
-         this.props.navigation.goBack();
-         return true;
-       }
-       return false;
   }
 
   loadData() {
@@ -54,22 +50,23 @@ class MyPosterPage extends Component {
     }
     //通过navigation获取参数
     const {params} = this.props.navigation.state;
-    const type = params.type;
+    const id = params.id;
 
-    fetch(REQUEST_URL+'?page='+pageNo+'&type='+type)
+    fetch(REQUEST_URL + '/' + id + '/' + perNum + '-' + pageNo + '.json')
     .then((response) => response.json())
     .then((responseData) => {
       //下拉刷新
       if(pageNo == 1){
         this.state.dataArray = [];
       } 
-
-      let data = responseData.data.list;
+      let cnt = responseData.data.cnt;
+      let data = responseData.data.rooms;
 
       let dataBlob = [];
       let i = itemNo;
-
-      totalPage = data.pageCount;
+      let page = parseInt(cnt/perNum);
+      totalPage = cnt>perNum?(cnt%perNum?page + 1:page):1;
+      //console.warn('cnt:'+cnt+' totalPage:'+totalPage);
 
       data.map(function (item) {
         dataBlob.push({
@@ -102,7 +99,7 @@ class MyPosterPage extends Component {
     return (
       <FlatList
       data={this.state.dataArray}
-      renderItem={this.renderMovie.bind(this)}
+      renderItem={this.renderItem.bind(this)}
       ListHeaderComponent={this.renderHeader.bind(this)}
       onRefresh={this.onRefresh.bind(this)}
       refreshing={this.state.refreshing}
@@ -131,7 +128,7 @@ class MyPosterPage extends Component {
   return (
     <View style={styles.headView}>
     <Text style={{color:'white'}}>
-    暂时没有新的内容
+    暂时没有新的内容了
     </Text>
     </View>
     )
@@ -166,7 +163,6 @@ onEndReached() {
   if(this.state.showFoot != 0 ){
     return ;
   }
-
   if((pageNo != 1) && (pageNo >= totalPage)){
     return;
   } else {
@@ -176,31 +172,28 @@ onEndReached() {
   this.loadData();
 }
 
-renderMovie(movie) {
-  var movie = movie.item.value;
+renderItem(poster) {
+  var item = poster.item.value;
   return (
-    <TouchableOpacity style={styles.container} onPress={() => {this.player_video(movie)}}>
+    <TouchableOpacity style={styles.container} onPress={() => {this.player_video(item)}}>
     <View style={styles.container}>
     <Image
-    source={{uri:movie.roomSrc}}
+    source={{uri:item.spic}}
     style={styles.small}>
     </Image>
     <View style={styles.rightContainer}>
-    <Text style={styles.title}>{movie.roomName}</Text>
-    <Text style={styles.introduce}>{"主播："+movie.nickname}</Text>
-    <Text style={styles.introduce}>{"观看人数："+movie.hn}</Text>
+    <Text style={styles.title}>{item.title}</Text>
+    <Text style={styles.introduce}>{"主播："+item.nickname}</Text>
+    <Text style={styles.introduce}>{"观看人数："+item.online}</Text>
     </View>
     </View>
     </TouchableOpacity>
     );
 }
 
-player_video(movie) {
+player_video(item) {
     //通过navigation传递参数
-    //this.props.navigation.navigate('MyPlayer',{play_url:movie.uri});
-    
-    //播放地址需要通过页面的JS交互处理后才能获取,这里为了演示使用一个可用的播放地址测试
-    this.props.navigation.navigate('MyPlayer',{play_url:'http://aldirect.hls.huya.com/huyalive/78941969-2621195272-11257947969669824512-3120471178-10057-A-0-1_1200.m3u8'});
+    this.props.navigation.navigate('MyPlayer',{play_url: PLAY_URL + '/' + item.videoId +'.m3u8'});
   }
 }
 

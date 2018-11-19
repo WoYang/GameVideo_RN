@@ -13,8 +13,13 @@ import {
 } from 'react-native';
 
 import MyPosterPage from './MyPosterPage'
+import BackInterface from './BackInterface';
 
-var REQUEST_URL = 'https://m.douyu.com/api/cate/list';
+//获取全部游戏分类视频  400-1 表示1次获取400个数据
+var REQUEST_URL = 'https://m.zhanqi.tv/api/static/game.lists';
+
+var perNum = 400;
+var pageNum = 1;
 
 let cols = 3;
 let gap = 10;
@@ -22,10 +27,11 @@ let gap = 10;
 let ScreenWidth = Dimensions.get('window').width;
 let ImageWidth = (ScreenWidth - (cols + 1) * gap) / cols;
 
-class MyCategaryPage extends Component {
+class MyCategaryPage extends BackInterface {
 
   constructor(props) {
     super(props);
+    super.addNavigationStack('MyCategaryPage');
     this.state = {
       refreshing: false,
       dataArray: [],
@@ -39,10 +45,10 @@ class MyCategaryPage extends Component {
   }
 
   loadData() {
-    fetch(REQUEST_URL+'?type=')
+    fetch(REQUEST_URL + '/' + perNum + '-' + pageNum +'.json')
     .then((response) => response.json())
     .then((responseData) => {
-      let data = responseData.data.cate2Info;
+      let data = responseData.data.games;
       this.state.dataArray = [];
       this.setState({
         dataArray:this.state.dataArray.concat(data),
@@ -77,11 +83,11 @@ class MyCategaryPage extends Component {
     <View style={styles.innerViewStyle}>
 
     <Image
-    source={{uri:item.icon}}
+    source={{uri:item.spic}}
     style={styles.iconStyle}>
     </Image>
 
-    <Text numberOfLines={1} style={styles.textStyle}>{item.cate2Name}</Text>
+    <Text numberOfLines={1} style={styles.textStyle}>{item.name}</Text>
 
     </View>
     </TouchableOpacity>
@@ -90,7 +96,7 @@ class MyCategaryPage extends Component {
 
 select_item(item) {
     //通过navigation传递参数
-    this.props.navigation.navigate('MyPosterPage',{type:item.shortName});
+    this.props.navigation.navigate('MyPosterPage',{id:item.id});
   }
 }
 

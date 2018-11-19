@@ -13,19 +13,12 @@ import {
 } from 'react-native';
 
 import Video from 'react-native-video';
+import BackInterface from './BackInterface';
 
-class MyPlayer extends Component {
-
-  componentDidMount() {
-      BackHandler.addEventListener('hardwareBackPress', this.go_back.bind(this))
-  }
-
-  go_back() {
-      if (this.props.navigation) {
-         this.props.navigation.goBack();
-         return true;
-       }
-       return false;
+class MyPlayer extends BackInterface {
+  constructor(props) {
+    super(props);
+    super.addNavigationStack('MyPlayer');
   }
 
   state = {

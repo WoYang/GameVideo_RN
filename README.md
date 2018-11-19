@@ -32,4 +32,4 @@
 ![image](https://github.com/WoYang/GameVideo_RN/blob/master/work.gif)
 
 战旗 效果图：
-![image](http://upload-images.jianshu.io/upload_images/3613947-279a01d4af8638c3?imageMogr2/auto-orient/strip)
+![image](https://github.com/WoYang/GameVideo_RN/blob/master/work2.gif)

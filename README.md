@@ -27,6 +27,9 @@
 第四个体验,不熟悉JSX语法
     这个在于每个人对code的熟悉程度,但并不是门槛,我也就通过两天的学习基本知道该如何像原生API的应用一样去写React Native.但我知道这只是个开始.
   
-效果图：
+斗鱼 效果图：
 
 ![image](https://github.com/WoYang/GameVideo_RN/blob/master/work.gif)
+
+战旗 效果图：
+![image](http://upload-images.jianshu.io/upload_images/3613947-279a01d4af8638c3?imageMogr2/auto-orient/strip)
